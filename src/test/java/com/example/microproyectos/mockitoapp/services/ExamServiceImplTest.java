@@ -9,9 +9,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,11 +58,18 @@ public class ExamServiceImplTest {
      * 
      * }
      */
+    ExamRepository examRepository;
+    ExamService examService;
+
+    @BeforeEach
+    void setUp() {
+        examRepository = mock(ExamRepository.class);
+        examService = new ExamServiceImpl(examRepository);
+    }
+
     @Test
     @DisplayName("should obtain Math exam when search by name")
     void testKata4_a() {
-        ExamRepository examRepository = mock(ExamRepository.class);
-        ExamService examService = new ExamServiceImpl(examRepository);
         List<Exam> exams = Arrays.asList(new Exam(1L, "Matemáticas"), new Exam(3L, "Lenguaje"), new Exam(7L, "Música"));
         when(examRepository.findAll()).thenReturn(exams);
 
@@ -75,8 +84,6 @@ public class ExamServiceImplTest {
     @Test
     @DisplayName("should don't obtain exam when search by name not in list")
     void testKata4_b() {
-        ExamRepository examRepository = mock(ExamRepository.class);
-        ExamService examService = new ExamServiceImpl(examRepository);
         List<Exam> exams = Arrays.asList(new Exam(1L, "Matemáticas"), new Exam(3L, "Lenguaje"), new Exam(7L, "Música"));
         when(examRepository.findAll()).thenReturn(exams);
 
@@ -86,5 +93,15 @@ public class ExamServiceImplTest {
 
     }
 
-    
+    @Test
+    @DisplayName("should don't obtain exam when the list is empty")
+    void testKata5() {
+        when(examRepository.findAll()).thenReturn(Collections.emptyList());
+
+        Optional<Exam> examOptional = examService.findExamByName("Deportes");
+
+        assertFalse(examOptional.isPresent());
+
+    }
+
 }
