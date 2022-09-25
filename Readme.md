@@ -97,3 +97,18 @@ ExamRepository-->> BBDD: findAll()
 		    return  Collections.emptyList();
 	    }
     }
+
+## Crear un test utilizando la implementación del repositorio (Kata 2)
+Crear un test que permita comprobar el funcionamiento de findExamByName()  utilizando la implementación de ExamRepositoryImpl.java
+test: 
+```java
+@Test
+@DisplayName("should test method service using repository Implement")
+void  testKata2_a() {
+	ExamRepository  examRepository = new  ExamRepositoryImpl();
+	ExamService  examService = new  ExamServiceImpl(examRepository);
+	Exam  exam = examService.findExamByName("Matemáticas");
+	assertNotNull(exam);
+	assertEquals(1L, exam.getId());
+}
+```
