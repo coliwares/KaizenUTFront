@@ -12,15 +12,15 @@ Explicar la configuración de dependencias al modificando el **pom.xml** agregan
 > **pom.xml  :** 
 
 *Junit*
-
+```xml
     <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
         <version>5.X.X</version>
     </dependency>
-
+```
 *Mockito*
-
+```xml
     <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
@@ -31,8 +31,9 @@ Explicar la configuración de dependencias al modificando el **pom.xml** agregan
         <artifactId>mockito-junit-jupiter</artifactId>
         <version>X.X.X</version>
     </dependency>
+```
 *JaCoCo*
-
+```xml
     <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -56,6 +57,7 @@ Explicar la configuración de dependencias al modificando el **pom.xml** agregan
 	        </execution>
 	      </executions>
 	  </plugin>
+```
 ### Componentes del proyecto
 ```mermaid
 sequenceDiagram
@@ -64,7 +66,7 @@ ExamRepository-->> BBDD: findAll()
 ```
 ### Implementaciones iniciales
 > **ExamServiceImpl.java  :** 
-
+```java
     public  class  ExamServiceImpl  implements  ExamService {
 	    ExamRepository  examRepository;
 	    public  ExamServiceImpl(ExamRepository  examRepository) {
@@ -83,9 +85,9 @@ ExamRepository-->> BBDD: findAll()
 		    return  exam;
 	    }
     }
-
+```
 > **ExamRepositoryImpl.java  :** 
-
+```java
     package  com.example.microproyectos.mockitoapp.repositories;
     import  java.util.Collections;
     import  java.util.List;
@@ -97,7 +99,7 @@ ExamRepository-->> BBDD: findAll()
 		    return  Collections.emptyList();
 	    }
     }
-
+```
 ## Crear un test utilizando la implementación del repositorio (Kata 2)
 Crear un test que permita comprobar el funcionamiento de findExamByName()  utilizando la implementación de ExamRepositoryImpl.java
 test: 
@@ -107,6 +109,22 @@ test:
 void  testKata2_a() {
 	ExamRepository  examRepository = new  ExamRepositoryImpl();
 	ExamService  examService = new  ExamServiceImpl(examRepository);
+	Exam  exam = examService.findExamByName("Matemáticas");
+	assertNotNull(exam);
+	assertEquals(1L, exam.getId());
+}
+```
+## Modificar el test creado utilizando Mockito (Kata 3)
+Modifica el test que permita comprobar el funcionamiento de findExamByName()  para que no dependa de  la implementación de ExamRepositoryImpl.java
+test: 
+```java
+@Test
+@DisplayName("should test method service using Mocks")
+void  testKata3() {
+	ExamRepository  examRepository = mock(ExamRepository.class);
+	ExamService  examService = new  ExamServiceImpl(examRepository);
+	List<Exam> exams = Arrays.asList(new  Exam(1L, "Matemáticas"),new  Exam(3L, "Lenguaje"),new  Exam(7L, "Música"));
+	when(examRepository.findAll()).thenReturn(exams);
 	Exam  exam = examService.findExamByName("Matemáticas");
 	assertNotNull(exam);
 	assertEquals(1L, exam.getId());
