@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import com.example.microproyectos.mockitoapp.models.Exam;
 import com.example.microproyectos.mockitoapp.repositories.ExamRepository;
 import com.example.microproyectos.mockitoapp.repositories.ExamRepositoryImpl;
+import com.example.microproyectos.mockitoapp.repositories.QuestionRepository;
 
 public class ExamServiceImplTest {
     /*
@@ -59,12 +60,14 @@ public class ExamServiceImplTest {
      * }
      */
     ExamRepository examRepository;
+    QuestionRepository questionRepository;
     ExamService examService;
 
     @BeforeEach
     void setUp() {
         examRepository = mock(ExamRepository.class);
-        examService = new ExamServiceImpl(examRepository);
+        questionRepository = mock(QuestionRepository.class);
+        examService = new ExamServiceImpl(examRepository, questionRepository);
     }
 
     @Test
@@ -102,6 +105,39 @@ public class ExamServiceImplTest {
 
         assertFalse(examOptional.isPresent());
 
+    }
+
+    @Test
+    @DisplayName("should obtain exam plus questions by exam name")
+    void testKata6_a() {
+        List<Exam> exams = Arrays.asList(new Exam(1L, "Matemáticas"), new Exam(3L, "Lenguaje"), new Exam(7L, "Música"));
+        when(examRepository.findAll()).thenReturn(exams);
+        List<String> questions = Arrays.asList("prugunta 1", "2 + 2 =", "integral derivada....");
+        when(questionRepository.findQuestionsbyId(1L)).thenReturn(questions);
+
+        Exam exam = examService.FindExamWithQuestionsByName("Matemáticas");
+
+        assertNotNull(exam);
+        assertEquals("Matemáticas", exam.getName());
+        assertEquals(3, exam.getQuestions().size());
+        assertFalse(exam.getQuestions().isEmpty());
+        assertTrue(exam.getQuestions().contains("2 + 2 ="));
+    }
+
+    @Test
+    @DisplayName("should obtain exam but dont have questions by exam name")
+    void testKata6_b() {
+        List<Exam> exams = Arrays.asList(new Exam(1L, "Matemáticas"), new Exam(3L, "Lenguaje"), new Exam(7L, "Música"));
+        when(examRepository.findAll()).thenReturn(exams);
+        List<String> questions = Collections.emptyList();
+        when(questionRepository.findQuestionsbyId(1L)).thenReturn(questions);
+
+        Exam exam = examService.FindExamWithQuestionsByName("Matemáticas");
+
+        assertNotNull(exam);
+        assertEquals("Matemáticas", exam.getName());
+        assertEquals(0, exam.getQuestions().size());
+        assertTrue(exam.getQuestions().isEmpty());
     }
 
 }
