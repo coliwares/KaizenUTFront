@@ -2,25 +2,24 @@ package com.example.microproyectos.mockitoapp.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.example.microproyectos.mockitoapp.data.Data;
 import com.example.microproyectos.mockitoapp.models.Exam;
 import com.example.microproyectos.mockitoapp.repositories.ExamRepository;
-import com.example.microproyectos.mockitoapp.repositories.ExamRepositoryImpl;
 import com.example.microproyectos.mockitoapp.repositories.QuestionRepository;
 
 public class ExamServiceImplTest {
@@ -73,8 +72,7 @@ public class ExamServiceImplTest {
     @Test
     @DisplayName("should obtain Math exam when search by name")
     void testKata4_a() {
-        List<Exam> exams = Arrays.asList(new Exam(1L, "Matemáticas"), new Exam(3L, "Lenguaje"), new Exam(7L, "Música"));
-        when(examRepository.findAll()).thenReturn(exams);
+        when(examRepository.findAll()).thenReturn(Data.EXAMS);
 
         Optional<Exam> examOptional = examService.findExamByName("Matemáticas");
 
@@ -87,8 +85,7 @@ public class ExamServiceImplTest {
     @Test
     @DisplayName("should don't obtain exam when search by name not in list")
     void testKata4_b() {
-        List<Exam> exams = Arrays.asList(new Exam(1L, "Matemáticas"), new Exam(3L, "Lenguaje"), new Exam(7L, "Música"));
-        when(examRepository.findAll()).thenReturn(exams);
+        when(examRepository.findAll()).thenReturn(Data.EXAMS);
 
         Optional<Exam> examOptional = examService.findExamByName("Deportes");
 
@@ -110,10 +107,8 @@ public class ExamServiceImplTest {
     @Test
     @DisplayName("should obtain exam plus questions by exam name")
     void testKata6_a() {
-        List<Exam> exams = Arrays.asList(new Exam(1L, "Matemáticas"), new Exam(3L, "Lenguaje"), new Exam(7L, "Música"));
-        when(examRepository.findAll()).thenReturn(exams);
-        List<String> questions = Arrays.asList("prugunta 1", "2 + 2 =", "integral derivada....");
-        when(questionRepository.findQuestionsbyId(1L)).thenReturn(questions);
+        when(examRepository.findAll()).thenReturn(Data.EXAMS);
+        when(questionRepository.findQuestionsbyId(1L)).thenReturn(Data.QUESTIONS);
 
         Exam exam = examService.FindExamWithQuestionsByName("Matemáticas");
 
@@ -127,10 +122,9 @@ public class ExamServiceImplTest {
     @Test
     @DisplayName("should obtain exam but dont have questions by exam name")
     void testKata6_b() {
-        List<Exam> exams = Arrays.asList(new Exam(1L, "Matemáticas"), new Exam(3L, "Lenguaje"), new Exam(7L, "Música"));
-        when(examRepository.findAll()).thenReturn(exams);
+        when(examRepository.findAll()).thenReturn(Data.EXAMS);
         List<String> questions = Collections.emptyList();
-        when(questionRepository.findQuestionsbyId(1L)).thenReturn(questions);
+        when(questionRepository.findQuestionsbyId(anyLong())).thenReturn(questions);
 
         Exam exam = examService.FindExamWithQuestionsByName("Matemáticas");
 
@@ -138,6 +132,16 @@ public class ExamServiceImplTest {
         assertEquals("Matemáticas", exam.getName());
         assertEquals(0, exam.getQuestions().size());
         assertTrue(exam.getQuestions().isEmpty());
+    }
+
+    @Test
+    @DisplayName("should obtain exam but dont have a list of exams")
+    void testKata7() {
+        when(examRepository.findAll()).thenReturn(Collections.emptyList());
+
+        Exam exam = examService.FindExamWithQuestionsByName("Matemáticas");
+
+        assertNull(exam);
     }
 
 }

@@ -317,3 +317,79 @@ void  testKata6_b() {
 	assertTrue(exam.getQuestions().isEmpty());
 }
 ````
+## Refactorizar tests utilizando Datos de prueba estáticos (Kata 7)
++ Crear una clase que mantenga las constantes de los datos de prueba
++ Refactorizar los test para que tomen la data estática
++ Crear test que valide la obtención de un examen con preguntas cuando la lista de exámenes este vacía
+
+>Data.java
+```java
+package  com.example.microproyectos.mockitoapp.data;
+import  java.util.Arrays;
+import  java.util.List;
+import  com.example.microproyectos.mockitoapp.models.Exam;
+public  class  Data {
+	public  final  static  List<Exam> EXAMS = Arrays.asList(new  Exam(1L, "Matemáticas"), new  Exam(3L, "Lenguaje"), new  Exam(7L, "Música"));
+	public  final  static  List<String> QUESTIONS = Arrays.asList("prugunta 1", "2 + 2 =", "integral derivada....");
+}
+`````
+>Refactorización
+```java
+@Test
+@DisplayName("should obtain Math exam when search by name")
+void  testKata4_a() {
+	when(examRepository.findAll()).thenReturn(Data.EXAMS);
+	Optional<Exam> examOptional = examService.findExamByName("Matemáticas");
+	assertTrue(examOptional.isPresent());
+	assertEquals(1L, examOptional.get().getId());
+	assertEquals("Matemáticas", examOptional.get().getName());
+}
+@Test
+@DisplayName("should don't obtain exam when search by name not in list")
+void  testKata4_b() {
+	when(examRepository.findAll()).thenReturn(Data.EXAMS);
+	Optional<Exam> examOptional = examService.findExamByName("Deportes");
+	assertFalse(examOptional.isPresent());
+}
+@Test
+@DisplayName("should don't obtain exam when the list is empty")
+void  testKata5() {
+	when(examRepository.findAll()).thenReturn(Collections.emptyList());
+	Optional<Exam> examOptional = examService.findExamByName("Deportes");
+	assertFalse(examOptional.isPresent());
+}
+@Test
+@DisplayName("should obtain exam plus questions by exam name")
+void  testKata6_a() {
+	when(examRepository.findAll()).thenReturn(Data.EXAMS);
+	when(questionRepository.findQuestionsbyId(1L)).thenReturn(Data.QUESTIONS);
+	Exam  exam = examService.FindExamWithQuestionsByName("Matemáticas");
+	assertNotNull(exam);
+	assertEquals("Matemáticas", exam.getName());
+	assertEquals(3, exam.getQuestions().size());
+	assertFalse(exam.getQuestions().isEmpty());
+	assertTrue(exam.getQuestions().contains("2 + 2 ="));
+}
+@Test
+@DisplayName("should obtain exam but dont have questions by exam name")
+void  testKata6_b() {
+	when(examRepository.findAll()).thenReturn(Data.EXAMS);
+	List<String> questions = Collections.emptyList();
+	when(questionRepository.findQuestionsbyId(anyLong())).thenReturn(questions);
+	Exam  exam = examService.FindExamWithQuestionsByName("Matemáticas");
+	assertNotNull(exam);
+	assertEquals("Matemáticas", exam.getName());
+	assertEquals(0, exam.getQuestions().size());
+	assertTrue(exam.getQuestions().isEmpty());
+}
+`````
+>should obtain exam but dont have a list of exams
+```java
+@Test
+@DisplayName("should obtain exam but dont have a list of exams")
+void  testKata7() {
+	when(examRepository.findAll()).thenReturn(Collections.emptyList());
+	Exam  exam = examService.FindExamWithQuestionsByName("Matemáticas");
+	assertNull(exam);
+}
+`````
