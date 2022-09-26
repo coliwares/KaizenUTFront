@@ -4,10 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -26,7 +28,6 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
-
 import com.example.microproyectos.mockitoapp.data.Data;
 import com.example.microproyectos.mockitoapp.models.Exam;
 import com.example.microproyectos.mockitoapp.repositories.ExamRepository;
@@ -230,5 +231,35 @@ public class ExamServiceImplTest {
         verify(questionRepository).save(anyList());
 
     }
+
+    @Test
+    @DisplayName("should throws a exception")
+    void testKata12_a() {
+        when(examRepository.findAll()).thenReturn(Data.EXAMS);
+        when(questionRepository.findQuestionsbyId(anyLong())).thenThrow(IllegalArgumentException.class);
+
+        Exception exception =  assertThrows(IllegalArgumentException.class, () -> {
+            examService.findExamWithQuestionsByName("Matemáticas");
+        });
+        assertEquals(IllegalArgumentException.class, exception.getClass());
+
+    }
+
+    @Test
+    @DisplayName("should throws a exception - Correctly")
+    void testKata12_b() {
+        when(examRepository.findAll()).thenReturn(Data.EXAMS_ID_NULL);
+        when(questionRepository.findQuestionsbyId(isNull())).thenThrow(IllegalArgumentException.class);
+
+        Exception exception =  assertThrows(IllegalArgumentException.class, () -> {
+            examService.findExamWithQuestionsByName("Matemáticas");
+        });
+
+        assertEquals(IllegalArgumentException.class, exception.getClass());
+        verify(examRepository).findAll();
+        verify(questionRepository).findQuestionsbyId(isNull());
+        
+    }
+
 
 }

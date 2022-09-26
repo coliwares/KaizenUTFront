@@ -588,3 +588,35 @@ void  testKata11() {
 	verify(questionRepository).save(anyList());
 }
 `````
+## Comprobar excepciones sobre el método  (Kata 12)
++ Crear un test que compruebe la excepción IllegalArgumentsException 
++ modificar el test para que realmente compruebe la excepción y el llamado a las dependencias
+
+>creacion de test 
+````java
+@Test
+@DisplayName("should throws a exception")
+void  testKata12_a() {
+	when(examRepository.findAll()).thenReturn(Data.EXAMS);
+	when(questionRepository.findQuestionsbyId(anyLong())).thenThrow(IllegalArgumentException.class);
+	Exception  exception = assertThrows(IllegalArgumentException.class, () -> {
+		examService.findExamWithQuestionsByName("Matemáticas");
+	});
+	assertEquals(IllegalArgumentException.class, exception.getClass());
+}
+````
+>Modificacion de test 
+````java
+@Test
+@DisplayName("should throws a exception - Correctly")
+void  testKata12_b() {
+	when(examRepository.findAll()).thenReturn(Data.EXAMS_ID_NULL);
+	when(questionRepository.findQuestionsbyId(isNull())).thenThrow(IllegalArgumentException.class);
+	Exception  exception = assertThrows(IllegalArgumentException.class, () -> {
+		examService.findExamWithQuestionsByName("Matemáticas");
+	});
+	assertEquals(IllegalArgumentException.class, exception.getClass());
+	verify(examRepository).findAll();
+	verify(questionRepository).findQuestionsbyId(isNull());
+}
+````
