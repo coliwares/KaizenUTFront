@@ -431,3 +431,82 @@ void  testKata8_b() {
 	verify(questionRepository, never()).findQuestionsbyId(anyLong());
 }
 `````
+## Integrar uso de anotaciones  (Kata 9)
++ Definir mocks mediante notación @Mock
++ Integrar dependencia con @injectMocks al la clase concreta
++ Habilitar test mediante MockitoAnnotations.openMocks
++ Usar ExtendsWith como alternativa a MockitoAnnotations
+>Definicion de Mocks
+```java
+@Mock
+ExamRepository  examRepository;
+@Mock
+QuestionRepository  questionRepository;
+ExamService  examService;
+@BeforeEach
+void  setUp() {
+/*
+	* examRepository = mock(ExamRepository.class);
+	* questionRepository = mock(QuestionRepository.class);
+	* examService = new ExamServiceImpl(examRepository, questionRepository);
+*/ }
+`````
+>Uso de InjectsMocks
+```java
+@Mock
+ExamRepository  examRepository;
+@Mock
+QuestionRepository  questionRepository;
+@InjectMocks
+ExamServiceImpl  examService;
+@BeforeEach
+void  setUp() {
+	/*
+	* examRepository = mock(ExamRepository.class);
+	* questionRepository = mock(QuestionRepository.class);
+	* examService = new ExamServiceImpl(examRepository, questionRepository);
+	*/ 
+}
+`````
+
+>Habilitación
+```java
+@Mock
+ExamRepository  examRepository;
+@Mock
+QuestionRepository  questionRepository;
+@InjectMocks
+ExamServiceImpl  examService;
+@BeforeEach
+void  setUp() {
+MockitoAnnotations.openMocks(this);
+}
+`````
+
+>Extencion de clases simuladas sin pasar por setup
+```java
+@ExtendWith(MockitoExtension.class)
+public  class  ExamServiceImplTest {
+	@Mock
+	ExamRepository  examRepository;
+	@Mock
+	QuestionRepository  questionRepository;
+	@InjectMocks
+	ExamServiceImpl  examService;
+	@BeforeEach
+	void  setUp() {}
+`````
+>Refactorización de test 
+```java
+@Test
+@DisplayName("should obtain exam but dont have questions by exam name verifing method call")
+void  testKata8_b() {
+	when(examRepository.findAll()).thenReturn(Data.EXAMS);
+	Exam  exam = examService.FindExamWithQuestionsByName("deportes");
+	assertNull(exam);
+	verify(examRepository, atLeastOnce()).findAll();
+	verify(questionRepository, never()).findQuestionsbyId(anyLong());
+}
+`````
+
+

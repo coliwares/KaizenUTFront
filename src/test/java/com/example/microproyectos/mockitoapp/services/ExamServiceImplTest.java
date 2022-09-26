@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,12 +18,17 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.microproyectos.mockitoapp.data.Data;
 import com.example.microproyectos.mockitoapp.models.Exam;
 import com.example.microproyectos.mockitoapp.repositories.ExamRepository;
 import com.example.microproyectos.mockitoapp.repositories.QuestionRepository;
 
+@ExtendWith(MockitoExtension.class)
 public class ExamServiceImplTest {
     /*
      * @Test
@@ -61,16 +65,21 @@ public class ExamServiceImplTest {
      * 
      * }
      */
+    @Mock
     ExamRepository examRepository;
+    @Mock
     QuestionRepository questionRepository;
-    ExamService examService;
+    @InjectMocks
+    ExamServiceImpl examService;
 
     @BeforeEach
     void setUp() {
-        examRepository = mock(ExamRepository.class);
-        questionRepository = mock(QuestionRepository.class);
-        examService = new ExamServiceImpl(examRepository, questionRepository);
-    }
+//        MockitoAnnotations.openMocks(this);
+        /*
+         * examRepository = mock(ExamRepository.class);
+         * questionRepository = mock(QuestionRepository.class);
+         * examService = new ExamServiceImpl(examRepository, questionRepository);
+         */ }
 
     @Test
     @DisplayName("should obtain Math exam when search by name")
@@ -168,7 +177,6 @@ public class ExamServiceImplTest {
     @DisplayName("should obtain exam but dont have questions by exam name verifing method call")
     void testKata8_b() {
         when(examRepository.findAll()).thenReturn(Data.EXAMS);
-        when(questionRepository.findQuestionsbyId(anyLong())).thenReturn(Data.QUESTIONS);
 
         Exam exam = examService.FindExamWithQuestionsByName("deportes");
 
