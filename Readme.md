@@ -2,7 +2,7 @@
 Este repositorio está diseñado para aplicar de manera práctica conceptos de Junit y Mockito mediante un código simple comprendido por un POJO - Service y Repository sobre framework de Spring Boot.
 En este documento se describe el paso a paso de la Kata y su aplicación.
 
-## Creación y configuración de proyecto (Kata 1)
+## Creación y configuración de proyecto (Kata 1).
 
 ### Configuración de dependencias y plugins en el pom
 
