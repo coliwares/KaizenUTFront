@@ -23,7 +23,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 
 import com.example.microproyectos.mockitoapp.data.Data;
 import com.example.microproyectos.mockitoapp.models.Exam;
@@ -189,14 +191,40 @@ public class ExamServiceImplTest {
 
     @Test
     @DisplayName("should save a exam with question and verify save exam method ")
-    void testKata9() {
+    void testKata10() {
         Exam newExam = Data.EXAM_TO_SAVE;
         newExam.setQuestions(Data.QUESTIONS);
         when(examRepository.save(any(Exam.class))).thenReturn(Data.EXAM_TO_SAVE);
         Exam exam = examService.saveExam(Data.EXAM_TO_SAVE);
 
         assertNotNull(exam);
-        assertEquals(1L, exam.getId());
+//por kata 11        assertEquals(1L, exam.getId());
+        assertEquals("Matemáticas", exam.getName());
+        verify(examRepository).save(any(Exam.class));
+        verify(questionRepository).save(anyList());
+
+    }
+
+    @Test
+    @DisplayName("should save a exam with question and verify save exam method implements Answer")
+    void testKata11() {
+        Exam newExam = Data.EXAM_TO_SAVE;
+        newExam.setQuestions(Data.QUESTIONS);
+
+        when(examRepository.save(any(Exam.class))).then(new Answer<Exam>() {
+            Long sequence = 10L;
+            @Override
+            public Exam answer(InvocationOnMock invocation) throws Throwable {
+                Exam exam = invocation.getArgument(0);
+                exam.setId(sequence++);
+                return exam;
+            }
+            
+        });
+        Exam exam = examService.saveExam(Data.EXAM_TO_SAVE);
+
+        assertNotNull(exam);
+        assertEquals(10L, exam.getId());
         assertEquals("Matemáticas", exam.getName());
         verify(examRepository).save(any(Exam.class));
         verify(questionRepository).save(anyList());

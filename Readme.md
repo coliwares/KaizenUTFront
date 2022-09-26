@@ -557,3 +557,34 @@ verify(examRepository).save(any(Exam.class));
 verify(questionRepository).save(anyList());
 }
 `````
+## Simular autoincremento de Id al guardar  (Kata 11)
+para simular un incremento se debe simular el comportamiento que tendría la respuesta del repositorio
++ Modificar test de manera que autoincremente el ID implementando Answer
+>Modificamos el Id paqte se no sea parte de la constante en Data.java
+````java
+public  final  static  Exam  EXAM_TO_SAVE = new  Exam(null, "Matemáticas");
+`````
+>Modicicamos el test 
+````java
+@Test
+@DisplayName("should save a exam with question and verify save exam method implements Answer")
+void  testKata11() {
+	Exam  newExam = Data.EXAM_TO_SAVE;
+	newExam.setQuestions(Data.QUESTIONS);
+	when(examRepository.save(any(Exam.class))).then(new  Answer<Exam>() {
+	Long  sequence = 10L;
+	@Override
+		public  Exam  answer(InvocationOnMock  invocation) throws  Throwable {
+			Exam  exam = invocation.getArgument(0);
+			exam.setId(sequence++);
+			return  exam;
+		}
+	});
+	Exam  exam = examService.saveExam(Data.EXAM_TO_SAVE);
+	assertNotNull(exam);
+	assertEquals(10L, exam.getId());
+	assertEquals("Matemáticas", exam.getName());
+	verify(examRepository).save(any(Exam.class));
+	verify(questionRepository).save(anyList());
+}
+`````
