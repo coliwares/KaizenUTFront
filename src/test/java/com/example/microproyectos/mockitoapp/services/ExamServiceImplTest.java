@@ -6,7 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -142,6 +145,36 @@ public class ExamServiceImplTest {
         Exam exam = examService.FindExamWithQuestionsByName("Matemáticas");
 
         assertNull(exam);
+    }
+
+    @Test
+    @DisplayName("should obtain exam by exam name verifing method call")
+    void testKata8_a() {
+        when(examRepository.findAll()).thenReturn(Data.EXAMS);
+        when(questionRepository.findQuestionsbyId(1L)).thenReturn(Data.QUESTIONS);
+
+        Exam exam = examService.FindExamWithQuestionsByName("Matemáticas");
+
+        assertNotNull(exam);
+        assertEquals("Matemáticas", exam.getName());
+        assertEquals(3, exam.getQuestions().size());
+        assertFalse(exam.getQuestions().isEmpty());
+        assertTrue(exam.getQuestions().contains("2 + 2 ="));
+        verify(examRepository).findAll();
+        verify(questionRepository).findQuestionsbyId(1L);
+    }
+
+    @Test
+    @DisplayName("should obtain exam but dont have questions by exam name verifing method call")
+    void testKata8_b() {
+        when(examRepository.findAll()).thenReturn(Data.EXAMS);
+        when(questionRepository.findQuestionsbyId(anyLong())).thenReturn(Data.QUESTIONS);
+
+        Exam exam = examService.FindExamWithQuestionsByName("deportes");
+
+        assertNull(exam);
+        verify(examRepository, atLeastOnce()).findAll();
+        verify(questionRepository, never()).findQuestionsbyId(anyLong());
     }
 
 }
