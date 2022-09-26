@@ -4,4 +4,6 @@ import java.util.List;
 
 public interface QuestionRepository {
     List<String> findQuestionsbyId(Long id);
+    void save(List<String> questions);
+    
 }

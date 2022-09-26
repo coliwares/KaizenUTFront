@@ -479,7 +479,7 @@ QuestionRepository  questionRepository;
 ExamServiceImpl  examService;
 @BeforeEach
 void  setUp() {
-MockitoAnnotations.openMocks(this);
+	MockitoAnnotations.openMocks(this);
 }
 `````
 
@@ -508,5 +508,52 @@ void  testKata8_b() {
 	verify(questionRepository, never()).findQuestionsbyId(anyLong());
 }
 `````
+## Guardar exámenes con preguntas  (Kata 10)
+Permitir guardar exámenes y sus preguntas
++ Implementar los métodos necesarios para guardar la información tanto de exámenes y preguntas 
++ Crear nuevo test que pruebe el comportamiento del nuevo método  y lo verifique
 
-
+Implementación de nuevo código
+> QuestionRepository.java
+````java
+void  save(List<String> questions);
+````
+> ExamRepository.java
+````java
+Exam  save(Exam  exam);
+````
+> ExamService.java
+````java
+Exam  saveExam(Exam  exam);
+````
+> ExamServiceImpl.java
+````java
+@Override
+public  Exam  saveExam(Exam  exam) {
+//preguntamos si el examen tiene preguntas
+if(!exam.getQuestions().isEmpty()){
+	questionRepository.save(exam.getQuestions());
+}
+return  examRepository.save(exam);
+````
+Creación de test
+> Data.java
+```java
+public  final  static  Exam  EXAM_TO_SAVE = new  Exam(1L, "Matemáticas");
+```````
+> should save a exam with question and verify save exam method
+````java
+@Test
+@DisplayName("should save a exam with question and verify save exam method ")
+void  testKata10() {
+Exam  newExam = Data.EXAM_TO_SAVE;
+newExam.setQuestions(Data.QUESTIONS);
+when(examRepository.save(any(Exam.class))).thenReturn(Data.EXAM_TO_SAVE);
+Exam  exam = examService.saveExam(Data.EXAM_TO_SAVE);
+assertNotNull(exam);
+assertEquals(1L, exam.getId());
+assertEquals("Matemáticas", exam.getName());
+verify(examRepository).save(any(Exam.class));
+verify(questionRepository).save(anyList());
+}
+`````

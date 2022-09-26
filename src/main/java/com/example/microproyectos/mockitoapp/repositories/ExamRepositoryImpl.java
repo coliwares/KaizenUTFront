@@ -14,4 +14,10 @@ public class ExamRepositoryImpl implements ExamRepository {
         /* KATA3 No dependemos de la implementacion */return Collections.emptyList();
     }
 
+    @Override
+    public Exam save(Exam exam) {
+        return null;
+    }
+    
+
 }

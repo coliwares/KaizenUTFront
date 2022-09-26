@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
@@ -74,7 +76,7 @@ public class ExamServiceImplTest {
 
     @BeforeEach
     void setUp() {
-//        MockitoAnnotations.openMocks(this);
+        // MockitoAnnotations.openMocks(this);
         /*
          * examRepository = mock(ExamRepository.class);
          * questionRepository = mock(QuestionRepository.class);
@@ -122,7 +124,7 @@ public class ExamServiceImplTest {
         when(examRepository.findAll()).thenReturn(Data.EXAMS);
         when(questionRepository.findQuestionsbyId(1L)).thenReturn(Data.QUESTIONS);
 
-        Exam exam = examService.FindExamWithQuestionsByName("Matemáticas");
+        Exam exam = examService.findExamWithQuestionsByName("Matemáticas");
 
         assertNotNull(exam);
         assertEquals("Matemáticas", exam.getName());
@@ -138,7 +140,7 @@ public class ExamServiceImplTest {
         List<String> questions = Collections.emptyList();
         when(questionRepository.findQuestionsbyId(anyLong())).thenReturn(questions);
 
-        Exam exam = examService.FindExamWithQuestionsByName("Matemáticas");
+        Exam exam = examService.findExamWithQuestionsByName("Matemáticas");
 
         assertNotNull(exam);
         assertEquals("Matemáticas", exam.getName());
@@ -151,7 +153,7 @@ public class ExamServiceImplTest {
     void testKata7() {
         when(examRepository.findAll()).thenReturn(Collections.emptyList());
 
-        Exam exam = examService.FindExamWithQuestionsByName("Matemáticas");
+        Exam exam = examService.findExamWithQuestionsByName("Matemáticas");
 
         assertNull(exam);
     }
@@ -162,7 +164,7 @@ public class ExamServiceImplTest {
         when(examRepository.findAll()).thenReturn(Data.EXAMS);
         when(questionRepository.findQuestionsbyId(1L)).thenReturn(Data.QUESTIONS);
 
-        Exam exam = examService.FindExamWithQuestionsByName("Matemáticas");
+        Exam exam = examService.findExamWithQuestionsByName("Matemáticas");
 
         assertNotNull(exam);
         assertEquals("Matemáticas", exam.getName());
@@ -178,11 +180,27 @@ public class ExamServiceImplTest {
     void testKata8_b() {
         when(examRepository.findAll()).thenReturn(Data.EXAMS);
 
-        Exam exam = examService.FindExamWithQuestionsByName("deportes");
+        Exam exam = examService.findExamWithQuestionsByName("deportes");
 
         assertNull(exam);
         verify(examRepository, atLeastOnce()).findAll();
         verify(questionRepository, never()).findQuestionsbyId(anyLong());
+    }
+
+    @Test
+    @DisplayName("should save a exam with question and verify save exam method ")
+    void testKata9() {
+        Exam newExam = Data.EXAM_TO_SAVE;
+        newExam.setQuestions(Data.QUESTIONS);
+        when(examRepository.save(any(Exam.class))).thenReturn(Data.EXAM_TO_SAVE);
+        Exam exam = examService.saveExam(Data.EXAM_TO_SAVE);
+
+        assertNotNull(exam);
+        assertEquals(1L, exam.getId());
+        assertEquals("Matemáticas", exam.getName());
+        verify(examRepository).save(any(Exam.class));
+        verify(questionRepository).save(anyList());
+
     }
 
 }

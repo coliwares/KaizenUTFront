@@ -8,5 +8,7 @@ import com.example.microproyectos.mockitoapp.models.Exam;
 public interface ExamService {
     Optional<Exam> findExamByName(String name);
 
-    Exam FindExamWithQuestionsByName(String name);
+    Exam findExamWithQuestionsByName(String name);
+
+    Exam saveExam(Exam exam); 
 }

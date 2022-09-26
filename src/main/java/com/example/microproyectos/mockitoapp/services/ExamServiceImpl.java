@@ -25,7 +25,7 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public Exam FindExamWithQuestionsByName(String name) {
+    public Exam findExamWithQuestionsByName(String name) {
         Optional<Exam> examOptional = findExamByName(name);
         Exam exam = null;
         if (examOptional.isPresent()) {
@@ -35,5 +35,15 @@ public class ExamServiceImpl implements ExamService {
         }
         return exam;
         
+    }
+
+    @Override
+    public Exam saveExam(Exam exam) {
+        //preguntamos si el examen tiene preguntas
+        if(!exam.getQuestions().isEmpty()){
+            questionRepository.save(exam.getQuestions());
+        }
+
+        return examRepository.save(exam);
     }
 }
