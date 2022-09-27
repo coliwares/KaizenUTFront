@@ -147,3 +147,14 @@ Permitir guardar exámenes y sus preguntas
 ## Simular autoincremento de Id al guardar  (Kata 11)
 para simular un incremento se debe simular el comportamiento que tendría la respuesta del repositorio
 + Modificar test de manera que autoincremente el ID implementando Answer
+
+## Comprobar excepciones sobre el método  (Kata 12)
++ Crear un test que compruebe la excepción IllegalArgumentsException 
++ modificar el test para que realmente compruebe la excepción y el llamado a las dependencias
+
+## Comprobar excepciones sobre el método  (Kata 13)
+los Argument Matcher nos permiten verificar si los parámetros que se pasan la dependencia externa coinciden con el simulado
+
++ Crear un test que verifique argumentos del llamado de la dependencia de QuestionRepository  utilizando Arguments Matchers sea el datos correcto
++ Crear un test que verifique argumentos del llamado de la dependencia de QuestionRepository  utilizando Arguments Matchers sea null
++ Crear un test que verifique argumentos del llamado de la dependencia de QuestionRepository  utilizando Arguments Matchers sea mayor que 
