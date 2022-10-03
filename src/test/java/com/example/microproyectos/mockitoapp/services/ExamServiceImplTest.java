@@ -3,20 +3,22 @@ package com.example.microproyectos.mockitoapp.services;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.microproyectos.mockitoapp.data.Data;
 import com.example.microproyectos.mockitoapp.models.Exam;
 import com.example.microproyectos.mockitoapp.repositories.ExamRepository;
 import com.example.microproyectos.mockitoapp.repositories.QuestionRepository;
 
+@ExtendWith(MockitoExtension.class)
 public class ExamServiceImplTest {
 
     /*
@@ -84,15 +86,22 @@ public class ExamServiceImplTest {
      * 
      * }
      */
+
+    @Mock
     ExamRepository examRepository;
+    @Mock
     QuestionRepository questionRepository;
-    ExamService examService;
+    @InjectMocks
+    ExamServiceImpl examService;
 
     @BeforeEach
     void setUp() {
-        examRepository = mock(ExamRepository.class);
-        questionRepository = mock(QuestionRepository.class);
-        examService = new ExamServiceImpl(examRepository, questionRepository);
+        /*
+         * kata 9
+         * examRepository = mock(ExamRepository.class);
+         * questionRepository = mock(QuestionRepository.class);
+         * examService = new ExamServiceImpl(examRepository, questionRepository);
+         */
     }
 
     @Test
@@ -153,10 +162,13 @@ public class ExamServiceImplTest {
 
     }
 
-    /* Refactorizar tests utilizando Datos de prueba estáticos (Kata 7)
-Crear una clase que mantenga las constantes de los datos de prueba
-Refactorizar los test para que tomen la data estática
-Crear test que valide la obtención de un examen con preguntas cuando la lista de exámenes este vacía */
+    /*
+     * Refactorizar tests utilizando Datos de prueba estáticos (Kata 7)
+     * Crear una clase que mantenga las constantes de los datos de prueba
+     * Refactorizar los test para que tomen la data estática
+     * Crear test que valide la obtención de un examen con preguntas cuando la lista
+     * de exámenes este vacía
+     */
 
     @Test
     @DisplayName("Given find a exam when dont have a list of questions then return a exam without questions")
@@ -176,4 +188,53 @@ Crear test que valide la obtención de un examen con preguntas cuando la lista d
         
 
     }
+
+    /*
+     * Verificar invocaciones de métodos simulados (Kata 8)
+     * Mockito permite verificar las invocaciones de los métodos de las clases
+     * monitoreadas
+     * 
+     * Generar un test que permita verificar el llamado del método simulado de
+     * questionRepository.java
+     * Generar un test que permita verificar que no se llame el método simulado de
+     * questionRepository.java
+     */
+
+    @Test
+    @DisplayName("Given find a exam when the find is success then verify the method calls ")
+    void kata8_a(){
+        //arrange
+        when(examRepository.findAll()).thenReturn(Data.EXAMS);
+        when(questionRepository.findQuestionsbyId(anyLong())).thenReturn(Data.QUESTIONS);
+
+        //act
+        Exam exam = examService.FindExamWithQuestionsByName("Matemáticas");
+        //assert
+        assertNotNull(exam);
+        assertFalse(exam.getQuestions().isEmpty());
+        assertTrue(exam.getQuestions().contains("Fecha?"));
+        verify(examRepository).findAll();
+        verify(questionRepository).findQuestionsbyId(1L);
+    }
+
+    @Test
+    @DisplayName("Given find a exam when the find is fail then verify the method calls ")
+    void kata8_b(){
+        when(examRepository.findAll()).thenReturn(Data.EXAMS_EMPTY);
+        Exam exam = examService.FindExamWithQuestionsByName("ciencias");
+
+       assertNull(exam);
+       verify(examRepository,atLeast(1)).findAll();
+       verify(examRepository,atMost(1)).findAll();
+       verify(questionRepository, never()).findQuestionsbyId(anyLong());
+    }
+
+    /*
+     * Integrar uso de anotaciones (Kata 9)
+     * Definir mocks mediante notación @Mock
+     * Integrar dependencia con @injectMocks al la clase concreta
+     * Habilitar test mediante MockitoAnnotations.openMocks
+     * Usar ExtendsWith como alternativa a MockitoAnnotations
+     */
+
 }
